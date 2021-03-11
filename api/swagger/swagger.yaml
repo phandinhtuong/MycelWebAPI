@@ -36,13 +36,13 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/HelloWorldResponse"
+            $ref: "#/definitions/HelloWorldSuccessResponse"
         # responses may fall through to errors
         default:
           description: Error
           schema:
-            $ref: "#/definitions/ErrorResponse"
-  /crawl:
+            $ref: "#/definitions/HelloWorldErrorResponse"
+  /crawlTyGia:
     x-swagger-router-controller: tygia
     get:
       description: Trả về tỷ giá ngoại tệ
@@ -65,20 +65,39 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/TyGiaSuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/TyGiaErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
-  HelloWorldResponse:
+  HelloWorldSuccessResponse:
     required:
       - message
     properties:
       message:
         type: string
-  ErrorResponse:
+  HelloWorldErrorResponse:
     required:
       - message
     properties:
       message:
+        type: string
+  TyGiaSuccessResponse:
+    required:
+      - result
+    properties:
+      result:
+        type: string
+  TyGiaErrorResponse:
+    required:
+      - result
+    properties:
+      result:
         type: string

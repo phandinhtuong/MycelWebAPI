@@ -76,12 +76,12 @@ async function crawlTyGiaVietcombank(req, res) {
         }
       }
     }
-    if (result != "-"){
-    }else{
+    if (result != "-") {
+    } else {
       result = "No data";
     }
   }
-  
+
   // res.json({ currency: currency, type: type, date: date, result: result });
-  res.json({result: result});
+  res.json({ result: result });
 }
