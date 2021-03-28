@@ -73,6 +73,26 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/TyGiaErrorResponse"
+  /qrcode:
+    x-swagger-router-controller: qrcode
+    get:
+      description: Tạo QR Code string base 64
+      operationId: qrcodeStringGenerator
+      parameters:
+        - name: text
+          in: query
+          description: Input text to be transformed to QR code string
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/QRCodeSuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/QRCodeErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
@@ -96,6 +116,18 @@ definitions:
       result:
         type: string
   TyGiaErrorResponse:
+    required:
+      - result
+    properties:
+      result:
+        type: string
+  QRCodeSuccessResponse:
+    required:
+      - result
+    properties:
+      result:
+        type: string
+  QRCodeErrorResponse:
     required:
       - result
     properties:
