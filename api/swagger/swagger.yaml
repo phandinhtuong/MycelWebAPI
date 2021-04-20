@@ -93,6 +93,26 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/QRCodeErrorResponse"
+  /excelDB:
+    x-swagger-router-controller: excelDatabase
+    get:
+      description: Excel Database Connection
+      operationId: excelDatabaseConnection
+      parameters:
+        - name: operation
+          in: query
+          description: Operation to be processed
+          required: false
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ExcelDatabaseSuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ExcelDatabaseErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
@@ -128,6 +148,18 @@ definitions:
       result:
         type: string
   QRCodeErrorResponse:
+    required:
+      - result
+    properties:
+      result:
+        type: string
+  ExcelDatabaseSuccessResponse:
+    required:
+      - result
+    properties:
+      result:
+        type: string
+  ExcelDatabaseErrorResponse:
     required:
       - result
     properties:

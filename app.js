@@ -12,7 +12,16 @@ const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./api/swagger/swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
+app.use((req, res, next) => {
+  console.log(req.url.match('^[^?]*')[0]);
+  if (swaggerDocument.paths.hasOwnProperty(req.url.match('^[^?]*')[0])){ //check if the url pathname is in swagger doc
+    console.log('True url, not redirecting: ');
+  }else{
+    console.log('False url, redirecting: '); // if not, redirect to api-docs
+    res.redirect('/api-docs');
+  }
+  next();
+});
 
 SwaggerExpress.create(config, function(err, swaggerExpress) {
   if (err) { throw err; }
