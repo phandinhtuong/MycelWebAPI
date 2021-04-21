@@ -1,10 +1,11 @@
 swagger: "2.0"
 info: #Thông tin của APIs, trong này sẽ chứa những phần: title, version, description,
   version: "0.0.1"
-  title: Hello World App
+  title: Demo tinh năng tỷ giá của Phan Đinh Tường
+  description: Web API cung cấp tiện ích cho MycelApp, là đồ án tốt nghiệp Graduation Project của tác giả
 # during dev, should point to your local machine
 host: localhost:10010
-# basePath prefixes all resource paths 
+# basePath prefixes all resource paths. URL thực tế sẽ là http://domain basePath/..........
 basePath: /
 # 
 schemes:
@@ -17,15 +18,106 @@ consumes:
 # format of the responses to the client (Accepts)
 produces:
   - application/json
+#----------------------------------------------------------------------    
+#   KHAI BÁO CÁC MODEL dữ liệu, cấu trúc dữ liệu trao đổi
+#   KHAI BÁO enum
+#   Rất tiếc, swagger 2.0 không hỗ trợ chức năng tạo các enum tái sử dụng
+#   là components, nên phải khai báo như là một thành phần của definitions
+#----------------------------------------------------------------------
+definitions:
+  CURRENCY_TYPE: 
+    type: string
+    description: danh mục các ngoại tệ được cung cấp tỷ giá trên website Vietcombank
+    enum: &CURRENCY_TYPE [AUD,CAD,CHF,CNY,DKK,EUR,GBP,HKD,INR,JPY,KRW,KWD,MYR,NOK,RUB,SAR,SEK,SGD,THB,USD]
+  #-------definitions  HelloWorld--------------
+  HelloWorldSuccessResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+        example: text hoặc base64
+  HelloWorldErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  #-------definitions  TyGia--------------
+  TyGiaSuccessResponse:
+    required:
+      - result
+    properties:
+      result:
+        type: string
+        description: qui đổi vnđ
+      type:
+        type: string
+        format: CURRENCY_TYPE
+        description: loại tỷ giá        
+      date:
+        type: string
+        format: "date"
+        description: ngày tương ứng với tỷ giá. Cú pháp ddmmyyyy. 
+      time:
+        type: string
+        format: "time"
+        description: thời điểm tương ứng với tỷ giá. Cú pháp hhmmss. Chỉ có nếu xem tỷ giá tại thời điểm hiện tại, không xem trong quá khứ.
+    example:  { "result": "23,215.00", "type": "Sell",  "date": "01012021", "time":"135951" }  
+  TyGiaErrorResponse:
+    required:
+      - error    
+    properties:
+      error:
+        type: string
+    example:  {"error": "Mô tả chi tiết lỗi"}
+  #-------definitions  QRCode--------------
+  QRCodeSuccessResponse:
+    required:
+      - result
+    properties:
+      result:
+        type: string
+  QRCodeErrorResponse:
+    required:
+      - result
+    properties:
+      result:
+        type: string
+        example: text hoặc base64
+#----------------------------------------------------------------------    
+#   KHAI BÁO CÁC PHƯƠNG THỨC XÁC THỰC
+#----------------------------------------------------------------------
+securityDefinitions:
+  api_key:
+    name: "apiKey"
+    in  : query
+    type: "apiKey"
+#----------------------------------------------------------------------
+# KHAI BÁO CÁC TAG GROUP, giúp gom nhóm các hàm theo các góc nhìn khác nhau
+#----------------------------------------------------------------------
+tags:
+  - name: demo
+    description: Chạy thử, kiểm tra tính năng...
+  - name: finance
+    description: Các hàm liên quan tới tài chính
+    externalDocs:
+      description: Tài liệu hướng dẫn MYCEL app
+      url: https://mycel.app/help/list_mixin.html
+  - name: crawl      
+    description: Các hàm cần thu thập dữ liệu từ bên thứ 3
+#----------------------------------------------------------------------
+# PHẦN CHÍNH: định nghĩa các API, phương thức http được hỗ trợ    
+#----------------------------------------------------------------------
 paths:
-  /hello:
+  /hello:   
     # binds a127 app logic to a route
     x-swagger-router-controller: hello_world
-    get:
+    get:   
       description: Returns 'Hello' to the caller
       # used as the method name of the controller
       operationId: hello
-      parameters:
+      parameters:  # Các tham số vào của GET/POST
         - name: name
           in: query
           description: The name of the person to whom to say hello
@@ -42,37 +134,50 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/HelloWorldErrorResponse"
-  /crawlTyGia:
-    x-swagger-router-controller: tygia
-    get:
-      description: Trả về tỷ giá ngoại tệ
+  /crawlTyGia:                                # API có controller là crawlTyGia
+    x-swagger-router-controller: tygia   
+    get:                                      # Hỗ trợ giao thức get
+      summary:  Lấy tỷ giá ngoại tệ        # Giải thích về hàm
+      description: Tỷ giá được lấy từ website của Vietcombank. Chú ý chỉ lấy khi kích hoạt hàm ở cell. Hàm không chạy thời gian thực.
       operationId: crawlTyGia
-      parameters:
-        - name: currency
+      tags: 
+      - finance  
+      - crawl  
+      parameters:                             # Liệt kê và giải thích chi tiết các tham số
+        - name: currency                      # Tham số vào có tên currency
           in: query
-          description: Mã ngoại tệ
+          description: Mã ngoại tệ. Không phân biệt chữ hoa/thường
           required: true
           type: string
+          enum: *CURRENCY_TYPE                
+          default: USD                        # Giá trị mặc định   
+          allowEmptyValue: false              # Tham số phải có giá trị kèm theo, không được để trống
         - name: type
-          in: query
-          description: Loại tỷ giá
+          in: query                           # Có 4 giá trị query|path|header|cookie. Cookie là tham số truyên đi ở dạng Cookie: debug=0; csrftoken=BUSe35dohU3O1MZvDCU
+          description: Loại tỷ giá. Không phân biệt chữ hoa/thường
           required: true
           type: string
+          enum: [Buy, Transfer, Sell, Mua, Bán, Chuyển khoản]
+          default: Sell                        # Giá trị mặc định   
         - name: date
           in: query
-          description: Ngày lấy tỷ giá
-          required: true
+          description: Ngày lấy tỷ giá. Cú pháp ddmmyyyy, ví dụ 01022021. Bỏ qua hoặc tham số không có giá trị tức là lấy thời điểm hiện tại.
           type: string
+          allowEmptyValue: true              # Được phép để tham số nhưng không có giá trị kèm theo
       responses:
         "200":
           description: Success
           schema:
             # a pointer to a definition
             $ref: "#/definitions/TyGiaSuccessResponse"
-        default:
-          description: Error
+        "422":            
+          description: Tham số vào không hợp lệ
           schema:
             $ref: "#/definitions/TyGiaErrorResponse"
+        "400":            
+          description: Không thu thập được số liệu từ hệ thống của Vietcombank
+          schema:
+            $ref: "#/definitions/TyGiaErrorResponse"            
   /qrcode:
     x-swagger-router-controller: qrcode
     get:
@@ -95,41 +200,3 @@ paths:
             $ref: "#/definitions/QRCodeErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
-# complex objects have schema definitions
-definitions:
-  HelloWorldSuccessResponse:
-    required:
-      - message
-    properties:
-      message:
-        type: string
-  HelloWorldErrorResponse:
-    required:
-      - message
-    properties:
-      message:
-        type: string
-  TyGiaSuccessResponse:
-    required:
-      - result
-    properties:
-      result:
-        type: string
-  TyGiaErrorResponse:
-    required:
-      - result
-    properties:
-      result:
-        type: string
-  QRCodeSuccessResponse:
-    required:
-      - result
-    properties:
-      result:
-        type: string
-  QRCodeErrorResponse:
-    required:
-      - result
-    properties:
-      result:
-        type: string
