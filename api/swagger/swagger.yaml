@@ -73,18 +73,14 @@ definitions:
     example:  {"error": "Mô tả chi tiết lỗi"}
   #-------definitions  QRCode--------------
   QRCodeSuccessResponse:
-    required:
-      - result
-    properties:
-      result:
-        type: string
+    description: json or png
   QRCodeErrorResponse:
     required:
       - result
     properties:
       result:
         type: string
-        example: text hoặc base64
+        
 #----------------------------------------------------------------------    
 #   KHAI BÁO CÁC PHƯƠNG THỨC XÁC THỰC
 #----------------------------------------------------------------------
@@ -102,10 +98,15 @@ tags:
   - name: finance
     description: Các hàm liên quan tới tài chính
     externalDocs:
-      description: Tài liệu hướng dẫn MYCEL app
+      description: Tài liệu hướng dẫn MYCEL
       url: https://mycel.app/help/list_mixin.html
   - name: crawl      
     description: Các hàm cần thu thập dữ liệu từ bên thứ 3
+  - name: utilities      
+    description: Các hàm tiện ích khác
+    externalDocs:
+      description: Tài liệu hướng dẫn MYCEL
+      url: https://mycel.app/help/list_module.html
 #----------------------------------------------------------------------
 # PHẦN CHÍNH: định nghĩa các API, phương thức http được hỗ trợ    
 #----------------------------------------------------------------------
@@ -189,6 +190,40 @@ paths:
           description: Input text to be transformed to QR code string
           required: true
           type: string
+        - name: type
+          type: string
+          enum: ['json','png']
+          in: query
+          description: datatype such as json, png
+          default: json
+        - name: size
+          type: integer
+          in: query
+          description: the width of qrcode image
+          minimum: 5
+          default: 300
+        - name: color
+          type: string
+          in: query
+          description: the dark color. E.g. 123456
+          default: '000000'
+        - name: background
+          type: string
+          in: query
+          description: the light color. E.g. FFFFFF
+          default: 'FFFFFF'
+        - name: margin
+          type: integer
+          in: query
+          description: the width of qrcode image
+          minimum: 0
+          default: 1
+        - name: correction
+          type: string
+          enum: ['L','M','Q','H']
+          in: query
+          description: correctionmissing, misread, or obscured data. Greater redundancy is achieved at the cost of being able to store less data. See the appendix for details. Here are the supported values         
+          default: 'M' 
       responses:
         "200":
           description: Success
