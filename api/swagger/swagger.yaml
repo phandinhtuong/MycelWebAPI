@@ -3,7 +3,7 @@ info: #Thông tin của APIs, trong này sẽ chứa những phần: title, vers
   version: "0.0.1"
   title: Hello World App
 # during dev, should point to your local machine
-host: localhost:10010
+host: mycelwebapi.vimoitruong.xyz
 # basePath prefixes all resource paths 
 basePath: /
 # 
@@ -99,9 +99,29 @@ paths:
       description: Excel Database Connection
       operationId: excelDatabaseConnection
       parameters:
-        - name: operation
+        - name: op
           in: query
-          description: Operation to be processed
+          description: Operation to be processed, 'select' or 'insert'
+          required: true
+          type: string
+        - name: wbname
+          in: query
+          description: Workbook name
+          required: false
+          type: string
+        - name: author
+          in: query
+          description: Author of the workbook
+          required: false
+          type: string
+        - name: creationdate
+          in: query
+          description: Creation date of the workbook
+          required: false
+          type: string
+        - name: lastauthor
+          in: query
+          description: Last author of the workbook
           required: false
           type: string
       responses:
