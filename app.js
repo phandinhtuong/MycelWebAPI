@@ -2,6 +2,8 @@
 
 var SwaggerExpress = require('swagger-express-mw');
 var app = require('express')();
+var fs = require('fs');           // dùng để đọc SSL cert
+var https = require('https');     // dùng để tạo https có sử dụng cert
 module.exports = app; // for testing
 
 var config = {
@@ -37,10 +39,24 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   swaggerExpress.register(app);
 
   var port = process.env.PORT || 64000;
-  app.listen(port);
+
+  var domain = (false)?'localhost':'mycel.app';
+  if (domain === 'localhost') {            //Only using localhost
+    app.listen(port);
+  } else {                //Only using with domain mycel.app
+    // Declare cert files
+    var options = {
+      key  : fs.readFileSync('../cert/mycel.app-private-key.txt'),
+      cert : fs.readFileSync('../cert/3eb041dc9e3c4cd8.crt')
+    };
+    // init the https listener with cert
+    https.createServer(options, app).listen(port, function () {
+      console.log('Server started @ %s!', port);
+    });
+  }
 
   if (swaggerExpress.runner.swagger.paths['/hello']) {
-    console.log('try this:\ncurl http://127.0.0.1:' + port + '/hello?name=Scott');
-    console.log('or api home page:\ncurl http://127.0.0.1:' + port + '/api-docs');
+    console.log('try this:\ncurl http://' + domain + ':' + port + '/hello?name=Scott');
+    console.log('or api home page:\ncurl http://' + domain + ':'  + port + '/api-docs');
   }
 });
