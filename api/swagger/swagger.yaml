@@ -81,7 +81,19 @@ definitions:
     properties:
       result:
         type: string
-        
+  #-------definitions  ExcelDatabase--------------
+  ExcelDatabaseSuccessResponse:
+    required:
+      - result
+    properties:
+      result:
+        type: string
+  ExcelDatabaseErrorResponse:
+    required:
+      - result
+    properties:
+      result:
+        type: string        
 #----------------------------------------------------------------------    
 #   KHAI BÁO CÁC PHƯƠNG THỨC XÁC THỰC
 #----------------------------------------------------------------------
