@@ -17,7 +17,19 @@ const swaggerDocument = YAML.load('./api/swagger/swagger.yaml');
 // Thiết lập đường dẫn tới website xem api
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+
 //Kích hoạt giao diện swagger express
+app.use((req, res, next) => {
+  console.log(req.url.match('^[^?]*')[0]);
+  if (swaggerDocument.paths.hasOwnProperty(req.url.match('^[^?]*')[0])){ //check if the url pathname is in swagger doc
+    console.log('True url, not redirecting: ');
+  }else{
+    console.log('False url, redirecting: '); // if not, redirect to api-docs
+    res.redirect('/api-docs');
+  }
+  next();
+});
+
 SwaggerExpress.create(config, function(err, swaggerExpress) {
   if (err) { throw err; }
 
