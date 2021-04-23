@@ -8,10 +8,17 @@ var config = {
   appRoot: __dirname // required config
 };
 
+//gói giao diện web hiển thị api
 const swaggerUi = require('swagger-ui-express');
+//thư viện phân tích yaml
 const YAML = require('yamljs');
+//Xác định file manifest các web api của swagger
 const swaggerDocument = YAML.load('./api/swagger/swagger.yaml');
+// Thiết lập đường dẫn tới website xem api
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+
+//Kích hoạt giao diện swagger express
 app.use((req, res, next) => {
   console.log(req.url.match('^[^?]*')[0]);
   if (swaggerDocument.paths.hasOwnProperty(req.url.match('^[^?]*')[0])){ //check if the url pathname is in swagger doc
@@ -29,10 +36,11 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   // install middleware
   swaggerExpress.register(app);
 
-  var port = process.env.PORT || 10010;
+  var port = process.env.PORT || 64000;
   app.listen(port);
 
   if (swaggerExpress.runner.swagger.paths['/hello']) {
     console.log('try this:\ncurl http://127.0.0.1:' + port + '/hello?name=Scott');
+    console.log('or api home page:\ncurl http://127.0.0.1:' + port + '/api-docs');
   }
 });
