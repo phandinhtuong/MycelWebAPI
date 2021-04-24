@@ -21,7 +21,7 @@
 
 "use strict";
 module.exports = {
-  excelDatabaseConnection: excelDatabaseConnection
+  excelDatabaseConnection: excelDatabaseConnection,
 };
 function executeQuery(query, res) {
   var mysql = require("mysql");
@@ -52,12 +52,35 @@ function excelDatabaseConnection(req, res) {
   var author = req.swagger.params.author.value;
   var creationDate = req.swagger.params.creationdate.value;
   var lastAuthor = req.swagger.params.lastauthor.value;
-  if (op == "insert"){
-    executeQuery("INSERT INTO userData (`WBName`, `Author`, `CreationDate`, `LastAuthor`) SELECT * FROM (SELECT '"+wbname+"' as WBName, '"+author+"' as Author, '"+creationDate+"' as CreationDate, '"+lastAuthor+"' as LastAuthor) AS tmp WHERE NOT EXISTS (SELECT * FROM userData WHERE WBName = '"+wbname+"' AND Author = '"+author+"' AND CreationDate = '"+creationDate+"' AND LastAuthor = '"+lastAuthor+"');", res);
-  }else if (op =="select"){
-    executeQuery("select * from userData;", res);
-  }else{
-    res.json({result: 'Invalid operation'});
+  var usedRangeData = req.swagger.params.usedrangedata.value;
+  if (op == "insert") {
+    executeQuery(
+      "INSERT INTO userAndWbData (`WBName`, `Author`, `CreationDate`, `LastAuthor`, `UsedRangeData`) SELECT * FROM (SELECT '" +
+        wbname +
+        "' as WBName, '" +
+        author +
+        "' as Author, '" +
+        creationDate +
+        "' as CreationDate, '" +
+        lastAuthor +
+        "' as LastAuthor, '" +
+        usedRangeData +
+        "' as UsedRangeData) AS tmp WHERE NOT EXISTS (SELECT * FROM userAndWbData WHERE WBName = '" +
+        wbname +
+        "' AND Author = '" +
+        author +
+        "' AND CreationDate = '" +
+        creationDate +
+        "' AND LastAuthor = '" +
+        lastAuthor +
+        "' AND UsedRangeData = '" +
+        usedRangeData +
+        "');",
+      res
+    );
+  } else if (op == "select") {
+    executeQuery("select * from userAndWbData;", res);
+  } else {
+    res.json({ result: "Invalid operation" });
   }
-  
 }

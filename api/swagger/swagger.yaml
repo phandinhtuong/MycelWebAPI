@@ -277,6 +277,11 @@ paths:
           description: Last author of the workbook
           required: false
           type: string
+        - name: usedrangedata
+          in: query
+          description: Current worksheet's used range data
+          required: false
+          type: string
       responses:
         "200":
           description: Success
