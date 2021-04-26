@@ -4,7 +4,7 @@ info: #Thông tin của APIs, trong này sẽ chứa những phần: title, vers
   title: Demo tinh năng tỷ giá của Phan Đinh Tường
   description: Web API cung cấp tiện ích cho MycelApp, là đồ án tốt nghiệp Graduation Project của tác giả
 # during dev, should point to your local machine
-host: mycelwebapi.vimoitruong.xyz
+host: mycel.app:64000
 # basePath prefixes all resource paths 
 
 basePath: /
@@ -120,6 +120,9 @@ tags:
     externalDocs:
       description: Tài liệu hướng dẫn MYCEL
       url: https://mycel.app/help/list_module.html
+  - name: bioinformatic
+    description: Các hàm tin sinh học
+
 #----------------------------------------------------------------------
 # PHẦN CHÍNH: định nghĩa các API, phương thức http được hỗ trợ    
 #----------------------------------------------------------------------
@@ -192,11 +195,43 @@ paths:
           description: Không thu thập được số liệu từ hệ thống của Vietcombank
           schema:
             $ref: "#/definitions/TyGiaErrorResponse"            
+  /ipseuncp:                                # API có controller là ipseuncp
+    x-swagger-router-controller: ipseuncp   
+    get:                                      # Hỗ trợ giao thức get
+      summary:  iPseU-NCP                     # Giải thích về hàm
+      description: Identifying RNA Pseudouridine sites using Random Forest and NCP-encoded features
+      operationId: ipseuncp
+      tags: 
+      - bioinformatic  
+      - crawl  
+      externalDocs:
+        url: http://nguyenhongquang.edu.vn/problem-iPseU-NCP
+        description: DATA SOURCE
+      parameters:                             # Liệt kê và giải thích chi tiết các tham số
+        - name: option                        
+          in: query
+          description: Khuôn dạng dữ liệu FASTA
+          required: true
+          type: string
+          enum: ['H','S','M']
+          default: 'H'                        # Giá trị mặc định   
+          allowEmptyValue: false              # Tham số phải có giá trị kèm theo, không được để trống
+        - name: seq
+          in: query                           
+          description: Chuỗi gen cần phân tích. Ví dụ GCUAAACAGGUACUGCUGGGC
+          required: true
+          type: string
+          allowEmptyValue: false              # Tham số phải có giá trị kèm theo, không được để trống
+      responses:
+        "200":
+          description: The RNA with the marker + for positive, - for negative. E.g. GCUAAACAGG+UACUGCUGGGC
   /qrcode:
     x-swagger-router-controller: qrcode
     get:
       description: Tạo QR Code string base 64
       operationId: qrcodeStringGenerator
+      tags: 
+      - utilities         
       parameters:
         - name: text
           in: query
