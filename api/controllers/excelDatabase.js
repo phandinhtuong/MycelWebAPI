@@ -21,7 +21,8 @@
 
 "use strict";
 module.exports = {
-  excelDatabaseConnection: excelDatabaseConnection,
+  excelDatabaseSelect: excelDatabaseSelect,
+  excelDatabaseInsert: excelDatabaseInsert,
 };
 function executeQuery(query, res) {
   var mysql = require("mysql");
@@ -45,7 +46,7 @@ function executeQuery(query, res) {
     con.end();
   });
 }
-function excelDatabaseConnection(req, res) {
+function excelDatabaseSelect(req, res) {
   //arguments
   var op = req.swagger.params.op.value;
   var wbname = req.swagger.params.wbname.value;
@@ -83,4 +84,35 @@ function excelDatabaseConnection(req, res) {
   } else {
     res.json({ result: "Invalid operation" });
   }
+}
+function excelDatabaseInsert(req, res) {
+  var wbName = req.body.wbName;
+  var wbAuthor = req.body.wbAuthor;
+  var wbCreationDate = req.body.wbCreationDate;
+  var wbLastAuthor = req.body.wbLastAuthor;
+  var usedRangeJSON = req.body.usedRangeJSON;
+  executeQuery(
+    "INSERT INTO userAndWbData (`WBName`, `Author`, `CreationDate`, `LastAuthor`, `UsedRangeData`) SELECT * FROM (SELECT '" +
+      wbName +
+      "' as WBName, '" +
+      wbAuthor +
+      "' as Author, '" +
+      wbCreationDate +
+      "' as CreationDate, '" +
+      wbLastAuthor +
+      "' as LastAuthor, '" +
+      usedRangeJSON +
+      "' as UsedRangeData) AS tmp WHERE NOT EXISTS (SELECT * FROM userAndWbData WHERE WBName = '" +
+      wbName +
+      "' AND Author = '" +
+      wbAuthor +
+      "' AND CreationDate = '" +
+      wbCreationDate +
+      "' AND LastAuthor = '" +
+      wbLastAuthor +
+      "' AND UsedRangeData = '" +
+      usedRangeJSON +
+      "');",
+    res
+  );
 }

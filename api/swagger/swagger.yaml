@@ -1,7 +1,7 @@
 swagger: "2.0"
 info: #Thông tin của APIs, trong này sẽ chứa những phần: title, version, description,
   version: "0.0.1"
-  title: Demo tinh năng tỷ giá của Phan Đinh Tường
+  title: Demo tính năng tỷ giá của Phan Đình Tường
   description: Web API cung cấp tiện ích cho MycelApp, là đồ án tốt nghiệp Graduation Project của tác giả
 # during dev, should point to your local machine
 host: mycelwebapi.vimoitruong.xyz
@@ -26,6 +26,26 @@ produces:
 #   là components, nên phải khai báo như là một thành phần của definitions
 #----------------------------------------------------------------------
 definitions:
+  ExcelData:
+    type: object
+    required:
+      - wbName
+    properties:
+      wbName:
+        type: string
+        example: wbName1
+      wbAuthor:
+        type: string
+        example: TP
+      wbCreationDate:
+        type: string
+        example: 26042021
+      wbLastAuthor:
+        type: string
+        example: TP
+      usedRangeJSON:
+        type: string
+        example: address
   CURRENCY_TYPE: 
     type: string
     description: danh mục các ngoại tệ được cung cấp tỷ giá trên website Vietcombank
@@ -246,11 +266,11 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/QRCodeErrorResponse"
-  /excelDB:
+  /excelDBSelect:
     x-swagger-router-controller: excelDatabase
     get:
       description: Excel Database Connection
-      operationId: excelDatabaseConnection
+      operationId: excelDatabaseSelect
       parameters:
         - name: op
           in: query
@@ -291,5 +311,20 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ExcelDatabaseErrorResponse"
+  /excelDBInsert:
+    x-swagger-router-controller: excelDatabase
+    post:
+      summary: Insert an Excel Workbook entry
+      operationId: excelDatabaseInsert
+      parameters:
+        - in: body
+          name: user
+          schema:
+            $ref: '#/definitions/ExcelData'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
   /swagger:
     x-swagger-pipe: swagger_raw
