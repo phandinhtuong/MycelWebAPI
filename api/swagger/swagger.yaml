@@ -4,7 +4,8 @@ info: #Thông tin của APIs, trong này sẽ chứa những phần: title, vers
   title: Demo tính năng tỷ giá của Phan Đình Tường
   description: Web API cung cấp tiện ích cho MycelApp, là đồ án tốt nghiệp Graduation Project của tác giả
 # during dev, should point to your local machine
-host: mycel.app:64000
+#host: mycel.app:64000
+host: mycelwebapi.vimoitruong.xyz
 # basePath prefixes all resource paths 
 
 basePath: /
