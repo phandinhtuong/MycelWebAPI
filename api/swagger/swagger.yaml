@@ -47,6 +47,12 @@ definitions:
       usedRangeJSON:
         type: string
         example: address
+  LoginUser:
+    type: object
+    properties:
+      data:
+        type: string
+        example: tuong
   CURRENCY_TYPE: 
     type: string
     description: danh mục các ngoại tệ được cung cấp tỷ giá trên website Vietcombank
@@ -307,37 +313,6 @@ paths:
     get:
       description: Excel Database Connection
       operationId: excelDatabaseSelect
-      parameters:
-        - name: op
-          in: query
-          description: Operation to be processed, 'select' or 'insert'
-          required: true
-          type: string
-        - name: wbname
-          in: query
-          description: Workbook name
-          required: false
-          type: string
-        - name: author
-          in: query
-          description: Author of the workbook
-          required: false
-          type: string
-        - name: creationdate
-          in: query
-          description: Creation date of the workbook
-          required: false
-          type: string
-        - name: lastauthor
-          in: query
-          description: Last author of the workbook
-          required: false
-          type: string
-        - name: usedrangedata
-          in: query
-          description: Current worksheet's used range data
-          required: false
-          type: string
       responses:
         "200":
           description: Success
@@ -354,9 +329,38 @@ paths:
       operationId: excelDatabaseInsert
       parameters:
         - in: body
-          name: user
+          name: Excel data
           schema:
             $ref: '#/definitions/ExcelData'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+  /loginUserSelect:
+    x-swagger-router-controller: excelDatabase
+    get:
+      description: Display all login users in database
+      operationId: loginUserSelect
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ExcelDatabaseSuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ExcelDatabaseErrorResponse"
+  /loginUserInsert:
+    x-swagger-router-controller: excelDatabase
+    post:
+      summary: Insert a login user data
+      operationId: loginUserInsert
+      parameters:
+        - in: body
+          name: User data
+          schema:
+            $ref: '#/definitions/LoginUser'
       responses:
         "200":
           description: Success
