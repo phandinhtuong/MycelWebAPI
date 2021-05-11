@@ -53,6 +53,30 @@ definitions:
       data:
         type: string
         example: tuong
+  Register:
+    type: object
+    properties:
+      type:
+        type: string
+        example: normal
+      username:
+        type: string
+        example: tuong
+      password:
+        type: string
+        example: abcdefgh
+  Login:
+    type: object
+    properties:
+      type:
+        type: string
+        example: normal
+      username:
+        type: string
+        example: tuong
+      password:
+        type: string
+        example: abcdefgh
   CURRENCY_TYPE: 
     type: string
     description: danh mục các ngoại tệ được cung cấp tỷ giá trên website Vietcombank
@@ -361,6 +385,36 @@ paths:
           name: User data
           schema:
             $ref: '#/definitions/LoginUser'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+  /register:
+    x-swagger-router-controller: excelDatabase
+    post:
+      summary: User registration
+      operationId: register
+      parameters:
+        - in: body
+          name: User data
+          schema:
+            $ref: '#/definitions/Register'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+  /login:
+    x-swagger-router-controller: excelDatabase
+    post:
+      summary: User login
+      operationId: login
+      parameters:
+        - in: body
+          name: User data
+          schema:
+            $ref: '#/definitions/Login'
       responses:
         "200":
           description: Success

@@ -25,6 +25,8 @@ module.exports = {
   excelDatabaseInsert: excelDatabaseInsert,
   loginUserSelect: loginUserSelect,
   loginUserInsert: loginUserInsert,
+  register: register,
+  login:login
 };
 function executeQuery(query, res) {
   var mysql = require("mysql");
@@ -83,16 +85,44 @@ function excelDatabaseInsert(req, res) {
   );
 }
 function loginUserSelect(req, res) {
-  executeQuery("select * from loginUser;", res);
+  executeQuery("select * from loginUserSession;", res);
 }
 function loginUserInsert(req, res) {
   var data = req.body.data;
   executeQuery(
-    "INSERT INTO loginUser (`UserData`) SELECT * FROM (SELECT '" +
+    "INSERT INTO loginUserSession (`UserData`) SELECT * FROM (SELECT '" +
       data +
-      "' as UserData) AS tmp WHERE NOT EXISTS (SELECT * FROM loginUser WHERE UserData = '" +
+      "' as UserData) AS tmp WHERE NOT EXISTS (SELECT * FROM loginUserSession WHERE UserData = '" +
       data +
       "');",
     res
   );
+}
+function register(req, res) {
+  var type = req.body.type;
+  if (type == "normal") {
+    var username = req.body.username;
+    var password = req.body.password;
+    executeQuery(
+      "insert into loginUserNormal (`user_id`,`username`,`password`) select * from (select '0' as user_id, '" +
+        username +
+        "' as username, '"+password+"' as password) as tmp where not exists (select * from loginUserNormal where username = '"+username+"');",
+      res
+    );
+  } else if (type == "social") {
+  } else {
+  }
+}
+function login(req,res){
+  var type = req.body.type;
+  if (type == "normal") {
+    var username = req.body.username;
+    var password = req.body.password;
+    executeQuery(
+      "select exists(select * from loginUserNormal where username = '"+username+"' and password = '"+password+"') as result;",
+      res
+    );
+  } else if (type == "social") {
+  } else {
+  }
 }
