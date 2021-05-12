@@ -26,15 +26,20 @@ module.exports = {
   loginUserSelect: loginUserSelect,
   loginUserInsert: loginUserInsert,
   register: register,
-  login:login
+  login: login,
 };
+var globalHost = "103.130.216.98";
+var globalUser = "vimoitru_excelDataUser";
+var globalPassword = "exceldatauser";
+var globalDatabase = "vimoitru_excelData";
+var md5 = require("md5");
 function executeQuery(query, res) {
   var mysql = require("mysql");
   var con = mysql.createConnection({
-    host: "103.130.216.98",
-    user: "vimoitru_excelDataUser",
-    password: "exceldatauser",
-    database: "vimoitru_excelData",
+    host: globalHost,
+    user: globalUser,
+    password: globalPassword,
+    database: globalDatabase,
   });
   con.connect(function (err) {
     if (err) {
@@ -50,6 +55,7 @@ function executeQuery(query, res) {
     con.end();
   });
 }
+
 function excelDatabaseSelect(req, res) {
   executeQuery("select * from userAndWbData;", res);
 }
@@ -103,26 +109,88 @@ function register(req, res) {
   if (type == "normal") {
     var username = req.body.username;
     var password = req.body.password;
+    password = md5(password);
+    var email = req.body.email;
+    var firstname = req.body.firstname;
+    var lastname = req.body.lastname;
     executeQuery(
-      "insert into loginUserNormal (`user_id`,`username`,`password`) select * from (select '0' as user_id, '" +
+      "insert into loginUserNormal (`user_id`,`username`,`password`,`email`,`firstname`,`lastname`) select * from (select '0' as user_id, '" +
         username +
-        "' as username, '"+password+"' as password) as tmp where not exists (select * from loginUserNormal where username = '"+username+"');",
+        "' as username, '" +
+        password +
+        "' as password, '" +
+        email +
+        "' as email, '" +
+        firstname +
+        "' as firstname, '" +
+        lastname +
+        "' as lastname) as tmp where not exists (select * from loginUserNormal where username = '" +
+        username +
+        "');",
       res
     );
   } else if (type == "social") {
+    var username = req.body.username;
+    var password = req.body.password;
+    password = md5(password);
+    var email = req.body.email;
+    var firstname = req.body.firstname;
+    var lastname = req.body.lastname;
+    var socialUserId = req.body.socialUserId;
+    var otherData = req.body.otherData;
+    // res.json({ username: username, password: password, otherData: otherData });
+
+    executeQuery(
+      "select insertUserOrReturnExisted('" +
+        socialUserId +
+        "','" +
+        username +
+        "','" +
+        password +
+        "','" +
+        email +
+        "','" +
+        firstname +
+        "','" +
+        lastname +
+        "','" +
+        otherData +
+        "') as result;",
+      res
+    );
+  } else if (type == "checkSocialAccount") {
+    var socialUserId = req.body.socialUserId;
+    executeQuery(
+      "SELECT * FROM `loginUserNormal` WHERE user_id = '" + socialUserId + "';",
+      res
+    );
   } else {
+    res.json({ result: "Invalid type" });
   }
 }
-function login(req,res){
+function login(req, res) {
   var type = req.body.type;
   if (type == "normal") {
     var username = req.body.username;
     var password = req.body.password;
+    password = md5(password);
     executeQuery(
-      "select exists(select * from loginUserNormal where username = '"+username+"' and password = '"+password+"') as result;",
+      "SELECT username,email,firstname,lastname,social_data from loginUserNormal INNER JOIN loginUserSocial on loginUserNormal.user_id = loginUserSocial.user_id where username = '" +
+        username +
+        "'and password = '" +
+        password +
+        "';",
       res
     );
   } else if (type == "social") {
+    var socialUserId = req.body.socialUserId;
+    executeQuery(
+      "SELECT username,email,firstname,lastname,social_data from loginUserNormal INNER JOIN loginUserSocial on loginUserNormal.user_id = loginUserSocial.user_id where loginUserNormal.user_id = '" +
+        socialUserId +
+        "';",
+      res
+    );
   } else {
+    res.json({ result: "Invalid type" });
   }
 }

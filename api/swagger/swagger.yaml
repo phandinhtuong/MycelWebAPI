@@ -65,6 +65,21 @@ definitions:
       password:
         type: string
         example: abcdefgh
+      email:
+        type: string
+        example: sfsaf@fdgd.vn
+      firstname:
+        type: string
+        example: Phan
+      lastname:
+        type: string
+        example: Tuong
+      socialUserId:
+        type: string
+        example: google-oauth2|106473283855863075 
+      otherData:
+        type: string
+        example: picture
   Login:
     type: object
     properties:
@@ -77,6 +92,9 @@ definitions:
       password:
         type: string
         example: abcdefgh
+      socialUserId:
+        type: string
+        example: google-oauth2|106473283855863075
   CURRENCY_TYPE: 
     type: string
     description: danh mục các ngoại tệ được cung cấp tỷ giá trên website Vietcombank
