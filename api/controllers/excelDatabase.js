@@ -23,8 +23,8 @@
 module.exports = {
   excelDatabaseSelect: excelDatabaseSelect,
   excelDatabaseInsert: excelDatabaseInsert,
-  loginUserSelect: loginUserSelect,
-  loginUserInsert: loginUserInsert,
+  loginUserSessionSelect: loginUserSessionSelect,
+  loginUserSessionInsert: loginUserSessionInsert,
   register: register,
   login: login,
 };
@@ -90,10 +90,10 @@ function excelDatabaseInsert(req, res) {
     res
   );
 }
-function loginUserSelect(req, res) {
+function loginUserSessionSelect(req, res) {
   executeQuery("select * from loginUserSession;", res);
 }
-function loginUserInsert(req, res) {
+function loginUserSessionInsert(req, res) {
   var data = req.body.data;
   executeQuery(
     "INSERT INTO loginUserSession (`UserData`) SELECT * FROM (SELECT '" +

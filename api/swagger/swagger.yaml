@@ -191,6 +191,8 @@ tags:
       url: https://mycel.app/help/list_module.html
   - name: bioinformatic
     description: Các hàm tin sinh học
+  - name: database
+    description: Database để lưu trữ thông tin Excel, người dùng
 
 #----------------------------------------------------------------------
 # PHẦN CHÍNH: định nghĩa các API, phương thức http được hỗ trợ    
@@ -355,6 +357,8 @@ paths:
     get:
       description: Excel Database Connection
       operationId: excelDatabaseSelect
+      tags:
+        - database
       responses:
         "200":
           description: Success
@@ -369,6 +373,8 @@ paths:
     post:
       summary: Insert an Excel Workbook entry
       operationId: excelDatabaseInsert
+      tags:
+        - database
       parameters:
         - in: body
           name: Excel data
@@ -379,11 +385,13 @@ paths:
           description: Success
         default:
           description: Error
-  /loginUserSelect:
+  /loginUserSessionSelect:
     x-swagger-router-controller: excelDatabase
     get:
       description: Display all login users in database
-      operationId: loginUserSelect
+      operationId: loginUserSessionSelect
+      tags:
+        - database
       responses:
         "200":
           description: Success
@@ -393,11 +401,13 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ExcelDatabaseErrorResponse"
-  /loginUserInsert:
+  /loginUserSessionInsert:
     x-swagger-router-controller: excelDatabase
     post:
       summary: Insert a login user data
-      operationId: loginUserInsert
+      operationId: loginUserSessionInsert
+      tags:
+        - database
       parameters:
         - in: body
           name: User data
@@ -413,6 +423,8 @@ paths:
     post:
       summary: User registration
       operationId: register
+      tags:
+        - database
       parameters:
         - in: body
           name: User data
@@ -428,6 +440,8 @@ paths:
     post:
       summary: User login
       operationId: login
+      tags:
+        - database
       parameters:
         - in: body
           name: User data
