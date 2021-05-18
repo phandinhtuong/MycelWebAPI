@@ -27,6 +27,7 @@ module.exports = {
   loginUserSessionInsert: loginUserSessionInsert,
   register: register,
   login: login,
+  socialAccountInsert: socialAccountInsert,
 };
 var globalHost = "103.130.216.98";
 var globalUser = "vimoitru_excelDataUser";
@@ -94,79 +95,73 @@ function loginUserSessionSelect(req, res) {
   executeQuery("select * from loginUserSession;", res);
 }
 function loginUserSessionInsert(req, res) {
-  var data = req.body.data;
+  var username = req.body.username;
+  var socialUserId = req.body.socialUserId;
+
   executeQuery(
-    "INSERT INTO loginUserSession (`UserData`) SELECT * FROM (SELECT '" +
-      data +
-      "' as UserData) AS tmp WHERE NOT EXISTS (SELECT * FROM loginUserSession WHERE UserData = '" +
-      data +
+    "INSERT INTO loginUserSession (`social_id`, `username`) values ('" +
+      socialUserId +
+      "','" +
+      username +
       "');",
     res
   );
 }
 function register(req, res) {
-  var type = req.body.type;
-  if (type == "normal") {
-    var username = req.body.username;
-    var password = req.body.password;
-    password = md5(password);
-    var email = req.body.email;
-    var firstname = req.body.firstname;
-    var lastname = req.body.lastname;
-    executeQuery(
-      "insert into loginUserNormal (`user_id`,`username`,`password`,`email`,`firstname`,`lastname`) select * from (select '0' as user_id, '" +
-        username +
-        "' as username, '" +
-        password +
-        "' as password, '" +
-        email +
-        "' as email, '" +
-        firstname +
-        "' as firstname, '" +
-        lastname +
-        "' as lastname) as tmp where not exists (select * from loginUserNormal where username = '" +
-        username +
-        "');",
-      res
-    );
-  } else if (type == "social") {
-    var username = req.body.username;
-    var password = req.body.password;
-    password = md5(password);
-    var email = req.body.email;
-    var firstname = req.body.firstname;
-    var lastname = req.body.lastname;
-    var socialUserId = req.body.socialUserId;
-    var otherData = req.body.otherData;
-    // res.json({ username: username, password: password, otherData: otherData });
-
-    executeQuery(
-      "select insertUserOrReturnExisted('" +
-        socialUserId +
-        "','" +
-        username +
-        "','" +
-        password +
-        "','" +
-        email +
-        "','" +
-        firstname +
-        "','" +
-        lastname +
-        "','" +
-        otherData +
-        "') as result;",
-      res
-    );
-  } else if (type == "checkSocialAccount") {
-    var socialUserId = req.body.socialUserId;
-    executeQuery(
-      "SELECT * FROM `loginUserNormal` WHERE user_id = '" + socialUserId + "';",
-      res
-    );
-  } else {
-    res.json({ result: "Invalid type" });
-  }
+  var username = req.body.username;
+  var password = req.body.password;
+  password = md5(password);
+  var email = req.body.email;
+  var firstname = req.body.firstname;
+  var lastname = req.body.lastname;
+  executeQuery(
+    "insert into loginUser (`social_id`,`username`,`password`,`email`,`firstname`,`lastname`) select * from (select '0' as social_id, '" +
+      username +
+      "' as username, '" +
+      password +
+      "' as password, '" +
+      email +
+      "' as email, '" +
+      firstname +
+      "' as firstname, '" +
+      lastname +
+      "' as lastname) as tmp where not exists (select * from loginUser where username = '" +
+      username +
+      "');",
+    res
+  );
+}
+function socialAccountInsert(req, res) {
+  var username = req.body.username;
+  var socialUserId = req.body.socialUserId;
+  var password = req.body.password;
+  var email = req.body.email;
+  var firstname = req.body.firstname;
+  var lastname = req.body.lastname;
+  var picture = req.body.picture;
+  var otherData = req.body.otherData;
+  executeQuery(
+    "insert into loginUser (`social_id`,`username`,`password`,`email`,`firstname`,`lastname`,`picture`,`other`) select * from (select '" +
+      socialUserId +
+      "' as social_id, '" +
+      username +
+      "' as username, '" +
+      password +
+      "' as password, '" +
+      email +
+      "' as email, '" +
+      firstname +
+      "' as firstname, '" +
+      lastname +
+      "' as lastname, '" +
+      picture +
+      "' as picture, '" +
+      otherData +
+      "' as other) as tmp where not exists (select * from loginUser where social_id = '" +
+      socialUserId +
+      "');",
+    res
+  );
 }
 function login(req, res) {
   var type = req.body.type;
@@ -175,7 +170,7 @@ function login(req, res) {
     var password = req.body.password;
     password = md5(password);
     executeQuery(
-      "SELECT username,email,firstname,lastname,social_data from loginUserNormal INNER JOIN loginUserSocial on loginUserNormal.user_id = loginUserSocial.user_id where username = '" +
+      "SELECT * from loginUser where username = '" +
         username +
         "'and password = '" +
         password +
@@ -184,10 +179,10 @@ function login(req, res) {
     );
   } else if (type == "social") {
     var socialUserId = req.body.socialUserId;
+    var otherData = req.body.otherData;
+    //get other data and insert
     executeQuery(
-      "SELECT username,email,firstname,lastname,social_data from loginUserNormal INNER JOIN loginUserSocial on loginUserNormal.user_id = loginUserSocial.user_id where loginUserNormal.user_id = '" +
-        socialUserId +
-        "';",
+      "SELECT * from loginUser where social_id = '" + socialUserId + "';",
       res
     );
   } else {

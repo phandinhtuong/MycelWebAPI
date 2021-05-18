@@ -47,18 +47,18 @@ definitions:
       usedRangeJSON:
         type: string
         example: address
-  LoginUser:
+  LoginUserSession:
     type: object
     properties:
-      data:
+      username:
         type: string
         example: tuong
+      socialUserId:
+        type: string
+        example: google-oauth2|106473283855863075
   Register:
     type: object
     properties:
-      type:
-        type: string
-        example: normal
       username:
         type: string
         example: tuong
@@ -74,18 +74,18 @@ definitions:
       lastname:
         type: string
         example: Tuong
-      socialUserId:
-        type: string
-        example: google-oauth2|106473283855863075 
-      otherData:
-        type: string
-        example: picture
   Login:
     type: object
     properties:
-      type:
+      username:
         type: string
-        example: normal
+        example: tuong
+      password:
+        type: string
+        example: abcdefgh
+  SocialAccountInsert:
+    type: object
+    properties:
       username:
         type: string
         example: tuong
@@ -95,6 +95,21 @@ definitions:
       socialUserId:
         type: string
         example: google-oauth2|106473283855863075
+      email:
+        type: string
+        example: sfsaf@fdgd.vn
+      firstname:
+        type: string
+        example: Phan
+      lastname:
+        type: string
+        example: Tuong
+      picture:
+        type: string
+        example: picture
+      otherData:
+        type: string
+        example: nickname
   CURRENCY_TYPE: 
     type: string
     description: danh mục các ngoại tệ được cung cấp tỷ giá trên website Vietcombank
@@ -412,7 +427,7 @@ paths:
         - in: body
           name: User data
           schema:
-            $ref: '#/definitions/LoginUser'
+            $ref: '#/definitions/LoginUserSession'
       responses:
         "200":
           description: Success
@@ -447,6 +462,23 @@ paths:
           name: User data
           schema:
             $ref: '#/definitions/Login'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+  /socialAccountInsert:
+    x-swagger-router-controller: excelDatabase
+    post:
+      summary: Social account insert
+      operationId: socialAccountInsert
+      tags:
+        - database
+      parameters:
+        - in: body
+          name: User data
+          schema:
+            $ref: '#/definitions/SocialAccountInsert'
       responses:
         "200":
           description: Success
