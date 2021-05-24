@@ -4,8 +4,9 @@ info: #Thông tin của APIs, trong này sẽ chứa những phần: title, vers
   title: Demo tính năng tỷ giá của Phan Đình Tường
   description: Web API cung cấp tiện ích cho MycelApp, là đồ án tốt nghiệp Graduation Project của tác giả
 # during dev, should point to your local machine
-#host: mycel.app:64000
-host: mycelwebapi.vimoitruong.xyz
+host: mycel.app:64000
+#host: mycelwebapi.vimoitruong.xyz
+#host: localhost:64000
 # basePath prefixes all resource paths 
 
 basePath: /
@@ -372,6 +373,22 @@ paths:
     get:
       description: Excel Database Connection
       operationId: excelDatabaseSelect
+      tags:
+        - database
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ExcelDatabaseSuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ExcelDatabaseErrorResponse"
+  /testDatabase:
+    x-swagger-router-controller: excelDatabase
+    get:
+      description: Test Database Connection
+      operationId: testDatabase
       tags:
         - database
       responses:

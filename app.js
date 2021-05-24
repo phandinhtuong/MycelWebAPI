@@ -56,7 +56,7 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   }
 
   if (swaggerExpress.runner.swagger.paths['/hello']) {
-    console.log('try this:\ncurl https://' + domain + ':' + port + '/hello?name=Scott');
-    console.log('or api home page:\ncurl https://' + domain + ':'  + port + '/api-docs');
+    console.log('try this:\ncurl http://' + domain + ':' + port + '/hello?name=Scott');
+    console.log('or api home page:\ncurl http://' + domain + ':'  + port + '/api-docs');
   }
 });

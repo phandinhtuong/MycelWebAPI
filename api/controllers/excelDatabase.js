@@ -28,11 +28,12 @@ module.exports = {
   register: register,
   login: login,
   socialAccountInsert: socialAccountInsert,
+  testDatabase: testDatabase,
 };
-var globalHost = "103.130.216.98";
-var globalUser = "vimoitru_excelDataUser";
-var globalPassword = "exceldatauser";
-var globalDatabase = "vimoitru_excelData";
+var globalHost = "techlinkvn.com"; //"103.130.216.98";
+var globalUser = "mycel"; //"vimoitru_excelDataUser";
+var globalPassword = "469a3187e6f998c9dcae39efbbdebd0e"; //"exceldatauser";
+var globalDatabase = "mycel"; //"vimoitru_excelData";
 var md5 = require("md5");
 function executeQuery(query, res) {
   var mysql = require("mysql");
@@ -56,7 +57,9 @@ function executeQuery(query, res) {
     con.end();
   });
 }
-
+function testDatabase(req, res) {
+  executeQuery("show tables;", res);
+}
 function excelDatabaseSelect(req, res) {
   executeQuery("select * from userAndWbData;", res);
 }
