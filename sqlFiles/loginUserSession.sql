@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 24, 2021 at 01:08 PM
+-- Generation Time: May 24, 2021 at 01:42 PM
 -- Server version: 10.2.37-MariaDB-cll-lve
 -- PHP Version: 7.3.28
 
@@ -30,8 +30,8 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `loginUserSession` (
   `id` int(3) UNSIGNED ZEROFILL NOT NULL,
-  `social_id` char(30) NOT NULL,
-  `username` char(30) NOT NULL,
+  `social_id` char(50) NOT NULL,
+  `username` char(50) NOT NULL,
   `loginDate` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
