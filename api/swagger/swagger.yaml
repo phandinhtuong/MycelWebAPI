@@ -78,18 +78,24 @@ definitions:
   Login:
     type: object
     properties:
+      type:
+        type: string
+        example: normal
       username:
         type: string
         example: tuong
       password:
         type: string
         example: abcdefgh
+      socialUserId:
+        type: string
+        example: tuong
   SocialAccountInsert:
     type: object
     properties:
       username:
         type: string
-        example: tuong
+        example: google-oauth2|106473283855863075
       password:
         type: string
         example: abcdefgh

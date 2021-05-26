@@ -182,7 +182,7 @@ function login(req, res) {
     );
   } else if (type == "social") {
     var socialUserId = req.body.socialUserId;
-    var otherData = req.body.otherData;
+    // var otherData = req.body.otherData;
     //get other data and insert
     executeQuery(
       "SELECT * from loginUser where social_id = '" + socialUserId + "';",
