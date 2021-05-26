@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 24, 2021 at 02:01 PM
+-- Generation Time: May 26, 2021 at 01:40 PM
 -- Server version: 10.2.37-MariaDB-cll-lve
 -- PHP Version: 7.3.28
 
@@ -31,9 +31,9 @@ SET time_zone = "+00:00";
 CREATE TABLE `userAndWbData` (
   `ID` int(3) UNSIGNED ZEROFILL NOT NULL,
   `WBName` varchar(100) NOT NULL,
-  `Author` varchar(30) NOT NULL,
+  `Author` varchar(50) NOT NULL,
   `CreationDate` varchar(50) NOT NULL,
-  `LastAuthor` varchar(30) NOT NULL,
+  `LastAuthor` varchar(50) NOT NULL,
   `UsedRangeData` longtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
