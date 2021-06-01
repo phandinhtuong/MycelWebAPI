@@ -28,6 +28,7 @@ module.exports = {
   register: register,
   login: login,
   socialAccountInsert: socialAccountInsert,
+  testDatabase: testDatabase,
 };
 var globalHost = "103.130.216.98";
 var globalUser = "vimoitru_excelDataUser";
@@ -56,7 +57,9 @@ function executeQuery(query, res) {
     con.end();
   });
 }
-
+function testDatabase(req, res) {
+  executeQuery("show tables;", res);
+}
 function excelDatabaseSelect(req, res) {
   executeQuery("select * from userAndWbData;", res);
 }
@@ -66,30 +69,40 @@ function excelDatabaseInsert(req, res) {
   var wbCreationDate = req.body.wbCreationDate;
   var wbLastAuthor = req.body.wbLastAuthor;
   var usedRangeJSON = req.body.usedRangeJSON;
-  executeQuery(
-    "INSERT INTO userAndWbData (`WBName`, `Author`, `CreationDate`, `LastAuthor`, `UsedRangeData`) SELECT * FROM (SELECT '" +
-      wbName +
-      "' as WBName, '" +
-      wbAuthor +
-      "' as Author, '" +
-      wbCreationDate +
-      "' as CreationDate, '" +
-      wbLastAuthor +
-      "' as LastAuthor, '" +
-      usedRangeJSON +
-      "' as UsedRangeData) AS tmp WHERE NOT EXISTS (SELECT * FROM userAndWbData WHERE WBName = '" +
-      wbName +
-      "' AND Author = '" +
-      wbAuthor +
-      "' AND CreationDate = '" +
-      wbCreationDate +
-      "' AND LastAuthor = '" +
-      wbLastAuthor +
-      "' AND UsedRangeData = '" +
-      usedRangeJSON +
-      "');",
-    res
-  );
+  if (
+    wbName.includes("'") ||
+    wbAuthor.includes("'") ||
+    wbCreationDate.includes("'") ||
+    wbName.includes("'") ||
+    usedRangeJSON.includes("'")
+  ) {
+    res.json({ result: { affectedRows: 0 } });
+  } else {
+    executeQuery(
+      "INSERT INTO userAndWbData (`WBName`, `Author`, `CreationDate`, `LastAuthor`, `UsedRangeData`) SELECT * FROM (SELECT '" +
+        wbName +
+        "' as WBName, '" +
+        wbAuthor +
+        "' as Author, '" +
+        wbCreationDate +
+        "' as CreationDate, '" +
+        wbLastAuthor +
+        "' as LastAuthor, '" +
+        usedRangeJSON +
+        "' as UsedRangeData) AS tmp WHERE NOT EXISTS (SELECT * FROM userAndWbData WHERE WBName = '" +
+        wbName +
+        "' AND Author = '" +
+        wbAuthor +
+        "' AND CreationDate = '" +
+        wbCreationDate +
+        "' AND LastAuthor = '" +
+        wbLastAuthor +
+        "' AND UsedRangeData = '" +
+        usedRangeJSON +
+        "');",
+      res
+    );
+  }
 }
 function loginUserSessionSelect(req, res) {
   executeQuery("select * from loginUserSession;", res);
@@ -97,15 +110,18 @@ function loginUserSessionSelect(req, res) {
 function loginUserSessionInsert(req, res) {
   var username = req.body.username;
   var socialUserId = req.body.socialUserId;
-
-  executeQuery(
-    "INSERT INTO loginUserSession (`social_id`, `username`) values ('" +
-      socialUserId +
-      "','" +
-      username +
-      "');",
-    res
-  );
+  if (username.includes("'") || socialUserId.includes("'")) {
+    res.json({ result: "Invalid symbol" });
+  } else {
+    executeQuery(
+      "INSERT INTO loginUserSession (`social_id`, `username`) values ('" +
+        socialUserId +
+        "','" +
+        username +
+        "');",
+      res
+    );
+  }
 }
 function register(req, res) {
   var username = req.body.username;
@@ -114,22 +130,31 @@ function register(req, res) {
   var email = req.body.email;
   var firstname = req.body.firstname;
   var lastname = req.body.lastname;
-  executeQuery(
-    "insert into loginUser (`social_id`,`username`,`password`,`email`,`firstname`,`lastname`) select * from (select '0' as social_id, '" +
-      username +
-      "' as username, '" +
-      password +
-      "' as password, '" +
-      email +
-      "' as email, '" +
-      firstname +
-      "' as firstname, '" +
-      lastname +
-      "' as lastname) as tmp where not exists (select * from loginUser where username = '" +
-      username +
-      "');",
-    res
-  );
+  if (
+    username.includes("'") ||
+    email.includes("'") ||
+    firstname.includes("'") ||
+    lastname.includes("'")
+  ) {
+    res.json({ result: { affectedRows: 2 } });
+  } else {
+    executeQuery(
+      "insert into loginUser (`social_id`,`username`,`password`,`email`,`firstname`,`lastname`) select * from (select '0' as social_id, '" +
+        username +
+        "' as username, '" +
+        password +
+        "' as password, '" +
+        email +
+        "' as email, '" +
+        firstname +
+        "' as firstname, '" +
+        lastname +
+        "' as lastname) as tmp where not exists (select * from loginUser where username = '" +
+        username +
+        "');",
+      res
+    );
+  }
 }
 function socialAccountInsert(req, res) {
   var username = req.body.username;
@@ -140,51 +165,71 @@ function socialAccountInsert(req, res) {
   var lastname = req.body.lastname;
   var picture = req.body.picture;
   var otherData = req.body.otherData;
-  executeQuery(
-    "insert into loginUser (`social_id`,`username`,`password`,`email`,`firstname`,`lastname`,`picture`,`other`) select * from (select '" +
-      socialUserId +
-      "' as social_id, '" +
-      username +
-      "' as username, '" +
-      password +
-      "' as password, '" +
-      email +
-      "' as email, '" +
-      firstname +
-      "' as firstname, '" +
-      lastname +
-      "' as lastname, '" +
-      picture +
-      "' as picture, '" +
-      otherData +
-      "' as other) as tmp where not exists (select * from loginUser where social_id = '" +
-      socialUserId +
-      "');",
-    res
-  );
+  if (
+    username.includes("'") ||
+    socialUserId.includes("'") ||
+    email.includes("'") ||
+    firstname.includes("'") ||
+    lastname.includes("'") ||
+    picture.includes("'") ||
+    otherData.includes("'")
+  ) {
+    res.json({ result: { affectedRows: 2 } });
+  } else {
+    executeQuery(
+      "insert into loginUser (`social_id`,`username`,`password`,`email`,`firstname`,`lastname`,`picture`,`other`) select * from (select '" +
+        socialUserId +
+        "' as social_id, '" +
+        username +
+        "' as username, '" +
+        password +
+        "' as password, '" +
+        email +
+        "' as email, '" +
+        firstname +
+        "' as firstname, '" +
+        lastname +
+        "' as lastname, '" +
+        picture +
+        "' as picture, '" +
+        otherData +
+        "' as other) as tmp where not exists (select * from loginUser where social_id = '" +
+        socialUserId +
+        "');",
+      res
+    );
+  }
 }
 function login(req, res) {
   var type = req.body.type;
   if (type == "normal") {
     var username = req.body.username;
     var password = req.body.password;
-    password = md5(password);
-    executeQuery(
-      "SELECT * from loginUser where username = '" +
-        username +
-        "'and password = '" +
-        password +
-        "';",
-      res
-    );
+    if (username.includes("'")) {
+      res.json({ result: [] });
+    } else {
+      password = md5(password);
+      executeQuery(
+        "SELECT * from loginUser where username = '" +
+          username +
+          "'and password = '" +
+          password +
+          "';",
+        res
+      );
+    }
   } else if (type == "social") {
     var socialUserId = req.body.socialUserId;
+    if (socialUserId.includes("'")) {
+      res.json({ result: [] });
+    } else {
+      executeQuery(
+        "SELECT * from loginUser where social_id = '" + socialUserId + "';",
+        res
+      );
+    }
     // var otherData = req.body.otherData;
     //get other data and insert
-    executeQuery(
-      "SELECT * from loginUser where social_id = '" + socialUserId + "';",
-      res
-    );
   } else {
     res.json({ result: "Invalid type" });
   }
